@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'QR Qode',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -28,10 +29,10 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'QR Qode Chome Extension'),
     );
   }
 }
@@ -55,18 +56,73 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  final codesList = <Map<String, QrImageView>>[];
+  String qrText = '';
+  late final TextEditingController qrTextController;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  @override
+  void initState() {
+    qrTextController = TextEditingController(text: qrText);
+    super.initState();
   }
+
+  Center qrImageViewer(BuildContext context) {
+    return Center(
+      child: QrImageView(
+          data: qrText,
+          eyeStyle: QrEyeStyle(
+              color: Theme.of(context).primaryColor,
+              eyeShape: QrEyeShape.circle),
+          dataModuleStyle: QrDataModuleStyle(
+            color: Theme.of(context).primaryColor,
+            dataModuleShape: QrDataModuleShape.square,
+          ),
+          size: 200),
+    );
+  }
+
+  Padding textBox() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: TextField(
+        controller: qrTextController,
+        maxLines: null,
+        decoration: InputDecoration(
+            hintText: 'enter a URL or text',
+            floatingLabelBehavior: FloatingLabelBehavior.never,
+            label: const Padding(
+              padding: EdgeInsets.all(4.0),
+              child: Text('generate QR code'),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            )),
+        onChanged: (value) => setState(() {
+          qrText = value;
+        }),
+      ),
+    );
+  }
+
+  Center qrQodeTitle(BuildContext context) {
+    return Center(
+      child: SelectableText(
+        'QR QODE',
+        style: Theme.of(context).textTheme.displayLarge,
+      ),
+    );
+  }
+
+  Center welcomeToText(BuildContext context) {
+    return Center(
+      child: Text(
+        'Welcome to ',
+        style: Theme.of(context).textTheme.headlineLarge,
+      ),
+    );
+  }
+
+  void onAddQRCode() {}
 
   @override
   Widget build(BuildContext context) {
@@ -87,39 +143,38 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: ListView(
+          // mainAxisAlignment: MainAxisAlignment.center,
+          // mainAxisSize: MainAxisSize.min,
+          shrinkWrap: true,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            welcomeToText(context),
+            qrQodeTitle(context),
+            const SizedBox(height: 50),
+            textBox(),
+            const SizedBox(height: 50),
+            qrText.isEmpty ? Container() : qrImageViewer(context),
+            LayoutBuilder(
+              builder: (context, constraints) => 
+               Container(
+                width: constraints.maxWidth/21,
+                height: 100,
+                child: IconButton(
+                  onPressed: onAddQRCode,
+                  icon: Icon(
+                    Icons.save,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      // floatingActionButton:  const FloatingActionButton.extended(
+      //   onPressed: null,
+      //   label: Text('Save'),
+      //   icon: Icon(Icons.save_as_outlined,),
+      // ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
