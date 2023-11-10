@@ -1,40 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:qrq_chrome_extension/app.dart';
+import 'package:responsive_framework/responsive_breakpoints.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 
 void main() {
   runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'QR Qode',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'QR Qode Chome Extension'),
-    );
-  }
 }
 
 class MyHomePage extends StatefulWidget {
@@ -126,55 +97,71 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
       body: Center(
-        child: ListView(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          // mainAxisSize: MainAxisSize.min,
-          shrinkWrap: true,
-          children: <Widget>[
-            welcomeToText(context),
-            qrQodeTitle(context),
-            const SizedBox(height: 50),
-            textBox(),
-            const SizedBox(height: 50),
-            qrText.isEmpty ? Container() : qrImageViewer(context),
-            LayoutBuilder(
-              builder: (context, constraints) => 
-               Container(
-                width: constraints.maxWidth/21,
-                height: 100,
-                child: IconButton(
-                  onPressed: onAddQRCode,
-                  icon: Icon(
-                    Icons.save,
-                  ),
-                ),
+        child: Container(
+          width: 900,
+          height: 650,
+          child: ResponsiveRowColumn(
+            layout: ResponsiveRowColumnType.ROW,
+            // width: 500,
+            children: [
+              ResponsiveRowColumnItem(
+                child: ResponsiveBreakpoints.of(context).isMobile
+                    ? const Text('Mobile')
+                    : Container(),
+                //  ListView(
+                // mainAxisAlignment: MainAxisAlignment.center,
+                //   // mainAxisSize: MainAxisSize.min,
+                //   shrinkWrap: true,
+                //   children: <Widget>[
+                //         ResponsiveBreakpoints.of(context).isMobile?const Text('Mobile'):Container(),
+                //         ResponsiveBreakpoints.of(context).isTablet?const Text('Tablet'):Container(),
+                //         ResponsiveBreakpoints.of(context).isDesktop?const Text('Desktop'):Container(),
+                //         // ResponsiveBreakpoints.of(context).is?Text('Mobile'):Container(),
+                //         // ResponsiveBreakpoints.of(context).smallerThan('TABLET')?Text('Less than tablet'):Container(),
+
+                //     welcomeToText(context),
+                //     qrQodeTitle(context),
+                //     const SizedBox(height: 50),
+                //     textBox(),
+                //     const SizedBox(height: 50),
+                //     qrText.isEmpty ? Container() : qrImageViewer(context),
+                //     LayoutBuilder(
+                //       builder: (context, constraints) =>
+                //        Container(
+                //         width: constraints.maxWidth/21,
+                //         height: 100,
+                //         child: IconButton(
+                //           onPressed: onAddQRCode,
+                //           icon: const Icon(
+                //             Icons.save,
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+
+                //   ],
+                // ),
               ),
-            ),
-          ],
+              ResponsiveRowColumnItem(
+                child: ResponsiveBreakpoints.of(context).isTablet
+                    ? const Text('Tablet')
+                    : Container(), 
+              ),
+              ResponsiveRowColumnItem(
+                child: ResponsiveBreakpoints.of(context).isDesktop
+                    ? const Text('Desktop')
+                    : Container(), 
+              ),
+            ],
+          ),
         ),
       ),
-      // floatingActionButton:  const FloatingActionButton.extended(
-      //   onPressed: null,
-      //   label: Text('Save'),
-      //   icon: Icon(Icons.save_as_outlined,),
-      // ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
