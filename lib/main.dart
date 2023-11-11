@@ -27,7 +27,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final codesList = <Map<String, dynamic>>[];
+  List<String> codesList = [];
   String qrText = '';
   late final TextEditingController qrTextController;
   dynamic img;
@@ -112,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   height: 20,
                 ),
                 codesList.isNotEmpty
-                    ?
+                    ? CodesGrid(data: codesList)
                     : Container(
                         color: Colors.blueGrey.shade300,
                       ),
@@ -152,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     textAlign: TextAlign.center,
                     message: qrText,
                     child: Text(
-                      codesList[index]['qrText'].toString(),
+                      codesList[index].toString(),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 9, 
                       // style: Theme.of(context).textTheme.titleSmall
@@ -173,7 +173,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> onAddToList() async {
     setState(() {
-      codesList.add({'qrText': qrText, 'img': QRImg(qrText: qrText)});
+      codesList.add(qrText);
+      qrText='';
     });
   }
 }

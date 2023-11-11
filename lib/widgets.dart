@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 
 class PageHeader extends StatelessWidget {
   const PageHeader({super.key});
@@ -71,7 +72,8 @@ class ScreenDimensions extends StatelessWidget {
   }
 }
 class CodesGrid extends StatelessWidget {
-  const CodesGrid({super.key});
+  const CodesGrid({super.key, required this.data});
+  final List<String> data;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +85,7 @@ class CodesGrid extends StatelessWidget {
                           child: ResponsiveGridView.builder(
                             shrinkWrap: true,
                             alignment: Alignment.center,
-                            itemCount: codesList.length,
+                            itemCount: data.length,
                             // maxRowCount: 3,
                             gridDelegate: const ResponsiveGridDelegate(
                               childAspectRatio: 1.618033988749894,
@@ -95,6 +97,53 @@ class CodesGrid extends StatelessWidget {
                             itemBuilder: gridItemBuilder,
                           ),
                         ),
-                      )
+                      );
+  }
+  
+  Widget gridItemBuilder(BuildContext context, int index) {
+    var img = QrImageView(
+      data: data[index],
+      size: 110,
+    );
+    return Card(
+      color: Theme.of(context).cardColor,
+      child:
+          // Row(
+          // mainAxisAlignment: MainAxisAlignment.spaceAround,
+          // crossAxisAlignment: CrossAxisAlignment.start,
+          // children: [
+          Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal:8.0),
+            child: Row(
+              children: [
+                Flexible(
+                  child: Tooltip(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    textAlign: TextAlign.center,
+                    message: data[index],
+                    child: Text(
+                      data[index].toString(),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 9, 
+                      // style: Theme.of(context).textTheme.titleSmall
+                      // ?.copyWith(color: Colors.black45),
+                    ),
+                  ),
+                ),
+                img,
+              ],
+            ),
+          ),
+        ],
+      ),
+      // ],
+      // ),
+    );
   }
 }
