@@ -13,9 +13,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       builder: (context, child) => ResponsiveBreakpoints.builder(
 
-        child: child!, 
+        child: LayoutBuilder(builder: (context, constraints) {
+          return ConstrainedBox(constraints: BoxConstraints(
+                      minWidth: 300, minHeight: constraints.maxHeight),
+                      child: child!,);
+        },), 
         breakpoints: [
-        const Breakpoint(start: 0, end: 650, name: MOBILE,),
+        const Breakpoint(start: 200, end: 650, name: MOBILE,),
         const Breakpoint(start: 651, end: 1200, name: TABLET),
         const Breakpoint(start: 1201, end: 1920, name: DESKTOP),
         const Breakpoint(start: 1200, end: 1200, name: 'EXPAND_SIDE_PANEL') ,

@@ -1,6 +1,8 @@
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:qrq_chrome_extension/app.dart';
+import 'package:qrq_chrome_extension/widgets.dart';
 import 'package:responsive_framework/responsive_breakpoints.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
@@ -27,9 +29,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final codesList = <Map<String, QrImageView>>[];
+  final codesList = <Map<String, dynamic>>[];
   String qrText = '';
   late final TextEditingController qrTextController;
+  dynamic  img;
+  double width = 0;
 
   @override
   void initState() {
@@ -37,66 +41,40 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
-  Center qrImageViewer(BuildContext context) {
-    return Center(
-      child: QrImageView(
-          data: qrText,
-          eyeStyle: QrEyeStyle(
-              color: Theme.of(context).primaryColor,
-              eyeShape: QrEyeShape.circle),
-          dataModuleStyle: QrDataModuleStyle(
-            color: Theme.of(context).primaryColor,
-            dataModuleShape: QrDataModuleShape.square,
-          ),
-          size: 200),
-    );
-  }
+  //
 
-  Padding textBox() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: TextField(
-        controller: qrTextController,
-        maxLines: null,
-        decoration: InputDecoration(
-            hintText: 'enter a URL or text',
-            floatingLabelBehavior: FloatingLabelBehavior.never,
-            label: const Padding(
-              padding: EdgeInsets.all(4.0),
-              child: Text('generate QR code'),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            )),
-        onChanged: (value) => setState(() {
-          qrText = value;
-        }),
+  Container textBox() {
+    return Container(
+      width: width / 2.9,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: TextField(
+          controller: qrTextController,
+          maxLines: null,
+          decoration: InputDecoration(
+              hintText: 'enter a URL or text',
+              floatingLabelBehavior: FloatingLabelBehavior.never,
+              label: const Padding(
+                padding: EdgeInsets.all(4.0),
+                child: Text('generate QR code'),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              )),
+          onChanged: (value) => setState(() {
+            qrText = value;
+            // img=QrImageView(data: value,
+            // size: 200,);
+          }),
+        ),
       ),
     );
   }
 
-  Center qrQodeTitle(BuildContext context) {
-    return Center(
-      child: SelectableText(
-        'QR QODE',
-        style: Theme.of(context).textTheme.displayLarge,
-      ),
-    );
-  }
-
-  Center welcomeToText(BuildContext context) {
-    return Center(
-      child: Text(
-        'Welcome to ',
-        style: Theme.of(context).textTheme.headlineLarge,
-      ),
-    );
-  }
-
-  void onAddQRCode() {}
 
   @override
   Widget build(BuildContext context) {
+    width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -104,64 +82,74 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: Container(
-          width: 900,
+          width: width,
           height: 650,
-          child: ResponsiveRowColumn(
-            layout: ResponsiveRowColumnType.ROW,
-            // width: 500,
-            children: [
-              ResponsiveRowColumnItem(
-                child: ResponsiveBreakpoints.of(context).isMobile
-                    ? const Text('Mobile')
-                    : Container(),
-                //  ListView(
-                // mainAxisAlignment: MainAxisAlignment.center,
-                //   // mainAxisSize: MainAxisSize.min,
-                //   shrinkWrap: true,
-                //   children: <Widget>[
-                //         ResponsiveBreakpoints.of(context).isMobile?const Text('Mobile'):Container(),
-                //         ResponsiveBreakpoints.of(context).isTablet?const Text('Tablet'):Container(),
-                //         ResponsiveBreakpoints.of(context).isDesktop?const Text('Desktop'):Container(),
-                //         // ResponsiveBreakpoints.of(context).is?Text('Mobile'):Container(),
-                //         // ResponsiveBreakpoints.of(context).smallerThan('TABLET')?Text('Less than tablet'):Container(),
-
-                //     welcomeToText(context),
-                //     qrQodeTitle(context),
-                //     const SizedBox(height: 50),
-                //     textBox(),
-                //     const SizedBox(height: 50),
-                //     qrText.isEmpty ? Container() : qrImageViewer(context),
-                //     LayoutBuilder(
-                //       builder: (context, constraints) =>
-                //        Container(
-                //         width: constraints.maxWidth/21,
-                //         height: 100,
-                //         child: IconButton(
-                //           onPressed: onAddQRCode,
-                //           icon: const Icon(
-                //             Icons.save,
-                //           ),
-                //         ),
-                //       ),
-                //     ),
-
-                //   ],
-                // ),
-              ),
-              ResponsiveRowColumnItem(
-                child: ResponsiveBreakpoints.of(context).isTablet
-                    ? const Text('Tablet')
-                    : Container(), 
-              ),
-              ResponsiveRowColumnItem(
-                child: ResponsiveBreakpoints.of(context).isDesktop
-                    ? const Text('Desktop')
-                    : Container(), 
-              ),
-            ],
+          margin: const EdgeInsets.symmetric(horizontal: 32),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // const ScreenDimensions(),
+                const PageHeader(),
+                const SizedBox(height: 40,),
+                textBox(),
+                const SizedBox(height: 40,), 
+                QRImg(qrText: qrText),
+                const SizedBox(height: 40,), 
+             ElevatedButton(onPressed: onAddToList, child: Padding(
+               padding: const EdgeInsets.all(16.0),
+               child: const Icon(Icons.add,size: 50 ,),
+             )),
+codesList.isNotEmpty?
+                Container(
+                  height: 500,
+                  child: ResponsiveGridView.builder(
+                    shrinkWrap: true,
+                    alignment: Alignment.center,
+                    itemCount: codesList.length,
+                    maxRowCount: 3, 
+                    gridDelegate: const ResponsiveGridDelegate(
+                      childAspectRatio: 1.618033988749894,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                      maxCrossAxisExtent: 300,
+                      // minCrossAxisExtent: 300,
+                    ),
+                    itemBuilder: gridItemBuilder,
+                  ),
+                ):
+                Container(
+                  color: Colors.blueGrey.shade100,
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  Widget gridItemBuilder(BuildContext context, int index) {
+    img=QrImageView(data: qrText,
+    size: 50,);
+    return  Card(
+      child: Row(
+        children: [
+          Text(codesList[index]['qrText'].toString(),
+          // style: Theme.of(context).textTheme.titleSmall
+          // ?.copyWith(color: Colors.black45),
+          ),
+          img,
+        ],
+      ),
+    );
+  }
+
+  Future<void> onAddToList() async {
+    setState(() {
+       codesList.add({'qrText': qrText,
+    'img': QRImg(qrText: qrText)});
+    });
+   
   }
 }
