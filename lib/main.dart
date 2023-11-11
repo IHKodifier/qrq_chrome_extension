@@ -1,9 +1,7 @@
-import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:qrq_chrome_extension/app.dart';
 import 'package:qrq_chrome_extension/widgets.dart';
-import 'package:responsive_framework/responsive_breakpoints.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 void main() {
@@ -32,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final codesList = <Map<String, dynamic>>[];
   String qrText = '';
   late final TextEditingController qrTextController;
-  dynamic  img;
+  dynamic img;
   double width = 0;
 
   @override
@@ -71,7 +69,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
@@ -89,38 +86,36 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // const ScreenDimensions(),
+                const ScreenDimensions(),
                 const PageHeader(),
-                const SizedBox(height: 40,),
-                textBox(),
-                const SizedBox(height: 40,), 
-                QRImg(qrText: qrText),
-                const SizedBox(height: 40,), 
-             ElevatedButton(onPressed: onAddToList, child: Padding(
-               padding: const EdgeInsets.all(16.0),
-               child: const Icon(Icons.add,size: 50 ,),
-             )),
-codesList.isNotEmpty?
-                Container(
-                  height: 500,
-                  child: ResponsiveGridView.builder(
-                    shrinkWrap: true,
-                    alignment: Alignment.center,
-                    itemCount: codesList.length,
-                    maxRowCount: 3, 
-                    gridDelegate: const ResponsiveGridDelegate(
-                      childAspectRatio: 1.618033988749894,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                      maxCrossAxisExtent: 300,
-                      // minCrossAxisExtent: 300,
-                    ),
-                    itemBuilder: gridItemBuilder,
-                  ),
-                ):
-                Container(
-                  color: Colors.blueGrey.shade100,
+                const SizedBox(
+                  height: 20,
                 ),
+                textBox(),
+                const SizedBox(
+                  height: 20,
+                ),
+                qrText.isEmpty ? Container() : QRImg(qrText: qrText),
+                const SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                    onPressed: onAddToList,
+                    child: const Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Icon(
+                        Icons.add,
+                        size: 50,
+                      ),
+                    )),
+                SizedBox(
+                  height: 20,
+                ),
+                codesList.isNotEmpty
+                    ?
+                    : Container(
+                        color: Colors.blueGrey.shade300,
+                      ),
               ],
             ),
           ),
@@ -130,26 +125,55 @@ codesList.isNotEmpty?
   }
 
   Widget gridItemBuilder(BuildContext context, int index) {
-    img=QrImageView(data: qrText,
-    size: 50,);
-    return  Card(
-      child: Row(
+    img = QrImageView(
+      data: qrText,
+      size: 110,
+    );
+    return Card(
+      color: Theme.of(context).cardColor,
+      child:
+          // Row(
+          // mainAxisAlignment: MainAxisAlignment.spaceAround,
+          // crossAxisAlignment: CrossAxisAlignment.start,
+          // children: [
+          Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Text(codesList[index]['qrText'].toString(),
-          // style: Theme.of(context).textTheme.titleSmall
-          // ?.copyWith(color: Colors.black45),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal:8.0),
+            child: Row(
+              children: [
+                Flexible(
+                  child: Tooltip(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    textAlign: TextAlign.center,
+                    message: qrText,
+                    child: Text(
+                      codesList[index]['qrText'].toString(),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 9, 
+                      // style: Theme.of(context).textTheme.titleSmall
+                      // ?.copyWith(color: Colors.black45),
+                    ),
+                  ),
+                ),
+                img,
+              ],
+            ),
           ),
-          img,
         ],
       ),
+      // ],
+      // ),
     );
   }
 
   Future<void> onAddToList() async {
     setState(() {
-       codesList.add({'qrText': qrText,
-    'img': QRImg(qrText: qrText)});
+      codesList.add({'qrText': qrText, 'img': QRImg(qrText: qrText)});
     });
-   
   }
 }
