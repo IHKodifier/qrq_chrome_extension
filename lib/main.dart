@@ -1,4 +1,6 @@
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:qrq_chrome_extension/app.dart';
 import 'package:qrq_chrome_extension/widgets.dart';
@@ -43,27 +45,39 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Container textBox() {
     return Container(
-      width: width / 2.9,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: TextField(
-          controller: qrTextController,
-          maxLines: null,
-          decoration: InputDecoration(
-              hintText: 'enter a URL or text',
-              floatingLabelBehavior: FloatingLabelBehavior.never,
-              label: const Padding(
-                padding: EdgeInsets.all(4.0),
-                child: Text('generate QR code'),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: width / 2.5,
+              child: TextField(
+                controller: qrTextController,
+                maxLines: null,
+                decoration: InputDecoration(
+                    hintText: 'enter a URL or text',
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    label: const Padding(
+                      padding: EdgeInsets.all(4.0),
+                      child: Text('generate QR code'),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    )),
+                onChanged: (value) => setState(() {
+                  qrText = value;
+                  // img=QrImageView(data: value,
+                  // size: 200,);
+                }),
               ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              )),
-          onChanged: (value) => setState(() {
-            qrText = value;
-            // img=QrImageView(data: value,
-            // size: 200,);
-          }),
+            ),
+         SizedBox(width: 40,), 
+            OutlinedButton.icon(
+                onPressed: onPasteFromClipBoard,
+                icon: Icon(Icons.paste),
+                label: Text('Paste from Clipboard')),
+          ],
         ),
       ),
     );
@@ -76,6 +90,41 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            // UserAccountsDrawerHeader(
+            //     accountName: Text('User'), accountEmail: Text('Email')),
+            Container(
+              color: Theme.of(context).primaryColor,
+              height: 200,
+            ),
+            SizedBox(
+              height: 40,
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'QR Qode Extension',
+                style: Theme.of(context).textTheme.headlineLarge,
+              ),
+            )
+            // .animate()
+            // .fade()
+            // .flipH(duration: Duration(milliseconds: 1000))
+            , 
+            SizedBox(
+              height: 100,
+            ),
+            Text('https://github.com/IHKodifier'),
+            QrImageView(
+              data: 'https://github.com/IHKodifier',
+              size: 100,
+            ),
+          ],
+        ),
       ),
       body: Center(
         child: Container(
@@ -141,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal:8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               children: [
                 Flexible(
@@ -154,7 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Text(
                       codesList[index].toString(),
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 9, 
+                      maxLines: 9,
                       // style: Theme.of(context).textTheme.titleSmall
                       // ?.copyWith(color: Colors.black45),
                     ),
@@ -172,9 +221,22 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> onAddToList() async {
+    // ignore: unused_local_variable
+    var x=6;
+    if (qrText.isNotEmpty) {
+      setState(() {
+        codesList.add(qrText);
+        qrTextController.text = '';
+        qrText = '';
+      });
+    }
+  }
+
+  void onPasteFromClipBoard() async {
+    final str = await FlutterClipboard.paste();
     setState(() {
-      codesList.add(qrText);
-      qrText='';
+      var v= qrTextController.text +=  str;
+      qrTextController.text=v;
     });
   }
 }
